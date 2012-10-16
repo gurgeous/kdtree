@@ -1,0 +1,18 @@
+PATH
+  remote: .
+  specs:
+    kdtree (0.2)
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    awesome_print (1.1.0)
+    rake (0.9.2.2)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  awesome_print
+  kdtree!
+  rake
