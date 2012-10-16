@@ -1,3 +1,4 @@
+require "benchmark"
 require "kdtree"
 require "tempfile"
 require "test/unit"
@@ -12,6 +13,10 @@ class KdtreeTest < Test::Unit::TestCase
   def setup
     @points = (0...1000).map { |i| [rand_coord, rand_coord, i] }
     @kdtree = Kdtree.new(@points)
+  end
+
+  def teardown
+    File.unlink(TMP) if File.exists?(TMP)
   end
 
   def test_nearest
@@ -51,72 +56,71 @@ class KdtreeTest < Test::Unit::TestCase
   end
 
   def test_persist
-    begin
-      # write
-      File.open(TMP, "w") { |f| @kdtree.persist(f) }
-      # read
-      kdtree2 = File.open(TMP, "r") { |f| Kdtree.new(f) }
+    # write
+    File.open(TMP, "w") { |f| @kdtree.persist(f) }
+    # read
+    kdtree2 = File.open(TMP, "r") { |f| Kdtree.new(f) }
 
-      # now test some random points
-      100.times do
-        pt = [rand_coord, rand_coord]
-        id1 = @kdtree.nearest(*pt)
-        id2 = kdtree2.nearest(*pt)
-        assert(id1 == id2, "kdtree2 differed from kdtree")
-      end
-    ensure
-      File.unlink(TMP)
+    # now test some random points
+    100.times do
+      pt = [rand_coord, rand_coord]
+      id1 = @kdtree.nearest(*pt)
+      id2 = kdtree2.nearest(*pt)
+      assert(id1 == id2, "kdtree2 differed from kdtree")
     end
+  end
 
-    # now test magic problems
-    begin
-      File.open(TMP, "w") { |f| f.puts "That ain't right" }
-      assert_raise RuntimeError do
+  def test_bad_magic
+    File.open(TMP, "w") { |f| f.puts "That ain't right" }
+    assert_raise RuntimeError do
+      File.open(TMP, "r") { |f| Kdtree.new(f) }
+    end
+  end
+
+  def test_eof
+    File.open(TMP, "w") { |f| @kdtree.persist(f) }
+    bytes = File.read(TMP)
+
+    [2, 10, 100].each do |len|
+      File.write(TMP, bytes[0, len])
+      assert_raise EOFError do
         File.open(TMP, "r") { |f| Kdtree.new(f) }
       end
-    ensure
-      File.unlink(TMP)
     end
   end
 
   def dont_test_speed
-    printf("\n")
     sizes = [1, 100, 1000, 10000, 100000, 1000000]
     ks = [1, 5, 50, 255]
     sizes.each do |s|
       points = (0...s).map { |i| [rand_coord, rand_coord, i] }
 
       # build
-      tm = Time.now
-      kdtree = Kdtree.new(points)
-      puts "build #{s} took #{Time.now-tm}s"
-
-      begin
-        # write
-        tm = Time.now
-        File.open(TMP, "w") { |f| kdtree.persist(f) }
-        puts "write #{s} took #{sprintf("%.6f", Time.now-tm)}s"
-        # read
-        tm = Time.now
-        File.open(TMP, "r") { |f| Kdtree.new(f) }
-        puts "read  #{s} took #{sprintf("%.6f", Time.now-tm)}s"
-      ensure
-        File.unlink(TMP)
-      end
-
-      ks.each do |k|
-        total = count = 0
-        100.times do
-          tm = Time.now
-          if k == 1
-            kdtree.nearest(rand_coord, rand_coord)
-          else
-            kdtree.nearestk(rand_coord, rand_coord, k)
-          end
-          total += Time.now - tm
-          count += 1
+      Benchmark.bm(17) do |bm|
+        kdtree = nil
+        bm.report "build" do
+          kdtree = Kdtree.new(points)
         end
-        printf "avg query time = %.6fs [%d/%d]\n", total / count, s, k
+        bm.report "persist" do
+          File.open(TMP, "w") { |f| kdtree.persist(f) }
+        end
+        bm.report "read" do
+          File.open(TMP, "r") { |f| Kdtree.new(f) }
+        end
+
+        ks.each do |k|
+          bm.report "100 queries (#{k})" do
+            total = count = 0
+            100.times do
+              tm = Time.now
+              if k == 1
+                kdtree.nearest(rand_coord, rand_coord)
+              else
+                kdtree.nearestk(rand_coord, rand_coord, k)
+              end
+            end
+          end
+        end
       end
       puts
     end
@@ -133,3 +137,14 @@ class KdtreeTest < Test::Unit::TestCase
     rand(0) * 10 - 5
   end
 end
+
+# running dont_test_speed on my i5 2.8ghz:
+#
+#                         user     system      total        real
+# build               3.350000   0.020000   3.370000 (  3.520528)
+# persist             0.150000   0.020000   0.170000 (  0.301963)
+# read                0.280000   0.000000   0.280000 (  0.432676)
+# 100 queries (1)     0.000000   0.000000   0.000000 (  0.000319)
+# 100 queries (5)     0.000000   0.000000   0.000000 (  0.000412)
+# 100 queries (50)    0.000000   0.000000   0.000000 (  0.001417)
+# 100 queries (255)   0.000000   0.000000   0.000000 (  0.006268)
