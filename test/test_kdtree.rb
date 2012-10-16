@@ -1,13 +1,20 @@
-require "test/unit"
 require "kdtree"
+require "tempfile"
+require "test/unit"
 
 #
 # create a tree
 #
 
 class KdtreeTest < Test::Unit::TestCase
+  TMP = "#{Dir.tmpdir}/kdtree_test"
+
+  def setup
+    @points = (0...1000).map { |i| [rand_coord, rand_coord, i] }
+    @kdtree = Kdtree.new(@points)
+  end
+
   def test_nearest
-    setup_tree(1000)
     100.times do
       pt = [rand_coord, rand_coord]
 
@@ -26,7 +33,6 @@ class KdtreeTest < Test::Unit::TestCase
   end
 
   def test_nearestk
-    setup_tree(1000)
     100.times do
       pt = [rand_coord, rand_coord]
 
@@ -44,6 +50,35 @@ class KdtreeTest < Test::Unit::TestCase
     end
   end
 
+  def test_persist
+    begin
+      # write
+      File.open(TMP, "w") { |f| @kdtree.persist(f) }
+      # read
+      kdtree2 = File.open(TMP, "r") { |f| Kdtree.new(f) }
+
+      # now test some random points
+      100.times do
+        pt = [rand_coord, rand_coord]
+        id1 = @kdtree.nearest(*pt)
+        id2 = kdtree2.nearest(*pt)
+        assert(id1 == id2, "kdtree2 differed from kdtree")
+      end
+    ensure
+      File.unlink(TMP)
+    end
+
+    # now test magic problems
+    begin
+      File.open(TMP, "w") { |f| f.puts "That ain't right" }
+      assert_raise RuntimeError do
+        File.open(TMP, "r") { |f| Kdtree.new(f) }
+      end
+    ensure
+      File.unlink(TMP)
+    end
+  end
+
   def dont_test_speed
     printf("\n")
     sizes = [1, 100, 1000, 10000, 100000, 1000000]
@@ -55,6 +90,19 @@ class KdtreeTest < Test::Unit::TestCase
       tm = Time.now
       kdtree = Kdtree.new(points)
       puts "build #{s} took #{Time.now-tm}s"
+
+      begin
+        # write
+        tm = Time.now
+        File.open(TMP, "w") { |f| kdtree.persist(f) }
+        puts "write #{s} took #{sprintf("%.6f", Time.now-tm)}s"
+        # read
+        tm = Time.now
+        File.open(TMP, "r") { |f| Kdtree.new(f) }
+        puts "read  #{s} took #{sprintf("%.6f", Time.now-tm)}s"
+      ensure
+        File.unlink(TMP)
+      end
 
       ks.each do |k|
         total = count = 0
@@ -70,15 +118,11 @@ class KdtreeTest < Test::Unit::TestCase
         end
         printf "avg query time = %.6fs [%d/%d]\n", total / count, s, k
       end
+      puts
     end
   end
 
   protected
-
-  def setup_tree(len)
-    @points = (0...len).map { |i| [rand_coord, rand_coord, i] }
-    @kdtree = Kdtree.new(@points)
-  end
 
   def distance(a, b)
     x, y = a[0] - b[0], a[1] - b[1]

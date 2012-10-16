@@ -6,25 +6,15 @@ Gem::Specification.new do |s|
   s.email       = ["amd@gurge.com"]
   s.homepage    = "http://github.com/gurgeous/kdtree"
   s.summary     = "Blazingly fast, native 2d kdtree."
-  s.description = "Blazingly fast, native 2d kdtree."
+  s.description = <<EOF
+A kdtree is a data structure that make it possible to quickly solve
+the nearest neighbor problem. This is a native 2d kdtree suitable for
+production use.
+EOF
 
   s.rubyforge_project = "kdtree"
 
-  s.add_development_dependency("awesome_print")
-  s.add_development_dependency("rake-compiler")
-
-  s.files = %w[
-    LICENSE
-    Gemfile
-    Gemfile.lock
-    README.md
-    Rakefile
-    ext/kdtree/extconf.rb
-    ext/kdtree/kdtree.c
-    lib/kdtree.rb
-    test/test_kdtree.rb
-  ]
-  s.test_files = ["test/test_kdtree.rb"]
-  s.extensions = ["ext/kdtree/extconf.rb"]
-  s.require_paths = ["lib"]
+  s.files         = `git ls-files`.split("\n")
+  s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
+  s.extensions = ["ext/extconf.rb"]
 end
