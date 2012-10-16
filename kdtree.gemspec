@@ -13,8 +13,9 @@ production use with millions of points.
 EOF
 
   s.rubyforge_project = "kdtree"
+  s.add_development_dependency "rake-compiler"
 
   s.files      = `git ls-files`.split("\n")
   s.test_files = `git ls-files -- {test,spec,features}/*`.split("\n")
-  s.extensions = ["ext/extconf.rb"]
+  s.extensions = ["ext/kdtree/extconf.rb"]
 end

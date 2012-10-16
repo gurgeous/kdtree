@@ -1,7 +1,9 @@
 require "rake"
+require "rake/extensiontask"
 require "rake/testtask"
 
-spec = eval(File.read("kdtree.gemspec"))
+# load the spec, we use it below
+spec = Gem::Specification.load("kdtree.gemspec")
 
 #
 # gem
@@ -22,11 +24,19 @@ task release: :build do
 end
 
 #
-# minitest
+# rake-compiler
+#
+
+Rake::ExtensionTask.new("kdtree", spec)
+
+
+#
+# testing
 #
 
 Rake::TestTask.new(:test) do |test|
   test.libs << "test"
 end
+task test: :compile
 
 task default: :test
