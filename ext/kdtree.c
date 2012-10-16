@@ -33,6 +33,7 @@ typedef struct kresult {
     struct kdtree_data *kdtreep; \
     Data_Get_Struct(kdtree, struct kdtree_data, kdtreep);
 
+// kdtree public methods
 static VALUE kdtree_alloc(VALUE klass);
 static void kdtree_free(struct kdtree_data *kdtreep);
 static VALUE kdtree_initialize(VALUE kdtree, VALUE points);
@@ -41,12 +42,19 @@ static VALUE kdtree_nearestk(VALUE kdtree, VALUE x, VALUE y, VALUE k);
 static VALUE kdtree_persist(VALUE kdtree, VALUE io);
 static VALUE kdtree_to_s(VALUE kdtree);
 
-// helpers
+// kdtree helpers
 static int kdtree_build(struct kdtree_data *kdtreep, int min, int max, int depth);
 static void kdtree_nearest0(struct kdtree_data *kdtreep, int i, float x, float y, int depth, int *n_index, float *n_dist);
 static void kdtree_nearestk0(struct kdtree_data *kdtreep, int i, float x, float y, int k, int depth, kresult *k_list, int *k_len, float *k_dist);
 
+// io helpers
+static void read_all(VALUE io, void *buf, int len);
+static void write_all(VALUE io, const void *buf, int len);
+
 #define KDTREE_MAGIC "KdTr"
+
+// ids
+static ID id_read, id_write, id_binmode;
 
 //
 // implementation
@@ -64,18 +72,6 @@ static void kdtree_free(struct kdtree_data *kdtreep)
 {
     if (kdtreep) {
         free(kdtreep->nodes);
-    }
-}
-
-static void read_all(rb_io_t *fptr, char *buf, int len)
-{
-    while (len > 0) {
-        int n = fread(buf, 1, len, rb_io_stdio_file(fptr));
-        if (n == 0) {
-            rb_eof_error();
-        }
-        buf += n;
-        len -= n;
     }
 }
 
@@ -130,27 +126,23 @@ static VALUE kdtree_initialize(VALUE kdtree, VALUE arg)
         kdtreep->root = kdtree_build(kdtreep, 0, kdtreep->len, 0);
     } else if (rb_respond_to(arg, rb_intern("read"))) {
         VALUE io = arg;
-        rb_io_t *fptr;
         char buf[4];
-        if (rb_respond_to(io, rb_intern("binmode"))) {
-            rb_funcall2(io, rb_intern("binmode"), 0, 0);
+        if (rb_respond_to(io, id_binmode)) {
+            rb_funcall(io, id_binmode, 0);
         }
 
-        rb_io_taint_check(io);
-        GetOpenFile(io, fptr);
-        rb_io_check_readable(fptr);
-
         // check magic
-        read_all(fptr, buf, 4);
+        read_all(io, buf, 4);
         if (memcmp(KDTREE_MAGIC, buf, 4) != 0) {
             rb_raise(rb_eRuntimeError, "wrong magic number in kdtree file");
         }
 
         // read start of the struct
-        read_all(fptr, (char *)kdtreep, sizeof(struct kdtree_data) - sizeof(struct kdtree_node *));
+        read_all(io, kdtreep, sizeof(struct kdtree_data) - sizeof(struct kdtree_node *));
+
         // read the nodes
         kdtreep->nodes = ALLOC_N(struct kdtree_node, kdtreep->len);
-        read_all(fptr, (char *)kdtreep->nodes, sizeof(struct kdtree_node) * kdtreep->len);
+        read_all(io, kdtreep->nodes, sizeof(struct kdtree_node) * kdtreep->len);
     } else {
         rb_raise(rb_eTypeError, "array or IO required to init Kdtree");
     }
@@ -385,7 +377,7 @@ static void kdtree_nearestk0(struct kdtree_data *kdtreep, int i, float x, float 
             } else {
                 *k_dist = k_list[k - 1].distance;
             }
-         }
+        }
     }
 }
 
@@ -423,15 +415,13 @@ static VALUE kdtree_persist(VALUE kdtree, VALUE io)
     if (!rb_respond_to(io, rb_intern("write"))) {
         rb_raise(rb_eTypeError, "instance of IO needed");
     }
-    if (rb_respond_to(io, rb_intern("binmode"))) {
-        rb_funcall2(io, rb_intern("binmode"), 0, 0);
+    if (rb_respond_to(io, id_binmode)) {
+        rb_funcall(io, id_binmode, 0);
     }
 
-    str = rb_str_buf_new(0);
-    rb_str_buf_cat(str, KDTREE_MAGIC, 4);
-    rb_str_buf_cat(str, (char*)kdtreep, sizeof(struct kdtree_data) - sizeof(struct kdtree_node *));
-    rb_str_buf_cat(str, (char*)kdtreep->nodes, sizeof(struct kdtree_node) * kdtreep->len);
-    rb_io_write(io, str);
+    write_all(io, KDTREE_MAGIC, 4);
+    write_all(io, kdtreep, sizeof(struct kdtree_data) - sizeof(struct kdtree_node *));
+    write_all(io, kdtreep->nodes, sizeof(struct kdtree_node) * kdtreep->len);
     return io;
 }
 
@@ -448,6 +438,24 @@ static VALUE kdtree_to_s(VALUE kdtree)
 
     sprintf(buf, "#<%s:%p nodes=%d>", rb_obj_classname(kdtree), (void*)kdtree, kdtreep->len);
     return rb_str_new(buf, strlen(buf));
+}
+
+//
+// io helpers
+//
+
+static void read_all(VALUE io, void *buf, int len)
+{
+    VALUE string = rb_funcall(io, id_read, 1, INT2NUM(len));
+    if (NIL_P(string) || RSTRING_LEN(string) != len) {
+        rb_eof_error();
+    }
+    memcpy(buf, RSTRING_PTR(string), len);
+}
+
+static void write_all(VALUE io, const void *buf, int len)
+{
+    rb_funcall(io, id_write, 1, rb_str_new(buf, len));
 }
 
 //
@@ -494,4 +502,9 @@ void Init_kdtree()
     rb_define_method(clazz, "nearestk", kdtree_nearestk, 3);
     rb_define_method(clazz, "persist", kdtree_persist, 1);
     rb_define_method(clazz, "to_s", kdtree_to_s, 0);
+
+    // function ids
+    id_binmode = rb_intern("binmode");
+    id_read = rb_intern("read");
+    id_write = rb_intern("write");
 }
