@@ -1,3 +1,3 @@
 require "mkmf"
 
-create_makefile("kdtree/kdtree")
+create_makefile("kdtree")

@@ -1,1 +1,1 @@
-require "kdtree/kdtree"
+require "kdtree.so"
