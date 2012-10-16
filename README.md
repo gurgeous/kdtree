@@ -26,28 +26,13 @@ kd2 = File.open("treefile") { |f| Kdtree.new(f) }
 
 Kdtree is fast. How fast? Using a tree with 1 million points on my i5 2.8ghz:
 
-<table style="text-align:left">
-  <tr>
-    <th style="width:200px">build</th>
-    <td>3.5s</th>
-  </tr>
-  <tr>
-    <th>nearest point</th>
-    <td>0.000003s</td>
-  </tr>
-  <tr>
-    <th>nearest 5 points</th>
-    <td>0.000004s</td>
-  </tr>
-  <tr>
-    <th>nearest 50 points</th>
-    <td>0.000014s</td>
-  </tr>
-  <tr>
-    <th>nearest 255 points</th>
-    <td>0.000063s</td>
-  </tr>
-</table>
+```
+build               3.5s
+nearest point       0.000003s
+nearest 5 points    0.000004s
+nearest 50 points   0.000014s
+nearest 255 points  0.000063s
+```
 
 ### Limitations
 
@@ -70,9 +55,9 @@ Since this gem was released, several folks have contributed important patches:
 #### 0.3
 
 * use IO methods directly instead of rooting around in rb_io
-* thread safe, no more statics
-* Ruby 1.9.x compatibility! 1.8.x is no longer supported, and I haven't tried it.
-* C90 compliance, no warnings
+* thread safe, no more statics (@antifuchs)
+* Ruby 1.9.x compatibility! 1.8.x is no longer supported, and I haven't tried it. (@mcerna and others)
+* C90 compliance, no warnings (@ghazel and others)
 
 #### 0.2
 
