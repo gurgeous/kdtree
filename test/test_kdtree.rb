@@ -82,7 +82,7 @@ class KdtreeTest < Test::Unit::TestCase
     bytes = File.read(TMP)
 
     [2, 10, 100].each do |len|
-      File.write(TMP, bytes[0, len])
+      File.open(TMP, "w") { |f| f.write(bytes[0, len]) }
       assert_raise EOFError do
         File.open(TMP, "r") { |f| Kdtree.new(f) }
       end
