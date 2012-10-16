@@ -54,8 +54,8 @@ Since this gem was released, several folks have contributed important patches:
 
 #### 0.3
 
-* Ruby 1.9.x compatibility. 1.8.x is no longer supported, and I haven't tried it. (@mcerna and others)
-* Renamed KDTree to the more idiomatic Kdtree
+* Ruby 1.9.x compatibility (@mcerna and others)
+* renamed KDTree to the more idiomatic Kdtree
 * use IO methods directly instead of rooting around in rb_io
 * thread safe, no more statics (@antifuchs)
 * C90 compliance, no warnings (@ghazel)
