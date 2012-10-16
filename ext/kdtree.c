@@ -110,16 +110,14 @@ static VALUE kdtree_initialize(VALUE kdtree, VALUE arg)
         for (i = 0; i < RARRAY_LEN(points); ++i) {
             struct kdtree_node *n = kdtreep->nodes + i;
 
-            VALUE ptr = RARRAY_PTR(points)[i];
+            VALUE ptr = rb_ary_entry(points, i);
             VALUE v = rb_check_array_type(ptr);
-            VALUE *a;
             if (NIL_P(v) || RARRAY_LEN(v) != 3) {
                 continue;
             }
-            a = RARRAY_PTR(ptr);
-            n->x = NUM2DBL(a[0]);
-            n->y = NUM2DBL(a[1]);
-            n->id = NUM2INT(a[2]);
+            n->x = NUM2DBL(rb_ary_entry(v, 0));
+            n->y = NUM2DBL(rb_ary_entry(v, 1));
+            n->id = NUM2INT(rb_ary_entry(v, 2));
         }
 
         // now build the tree
