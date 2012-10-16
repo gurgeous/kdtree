@@ -7,7 +7,6 @@ spec = eval(File.read("kdtree.gemspec"))
 # gem
 #
 
-task gem: :build
 task :build do
   system "gem build --quiet kdtree.gemspec"
 end
