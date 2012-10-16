@@ -1,5 +1,4 @@
 #include "ruby.h"
-#include "ruby/io.h"
 
 //
 // interface
@@ -446,7 +445,7 @@ static void read_all(VALUE io, void *buf, int len)
 {
     VALUE string = rb_funcall(io, id_read, 1, INT2NUM(len));
     if (NIL_P(string) || RSTRING_LEN(string) != len) {
-        rb_eof_error();
+        rb_raise(rb_eEOFError, "end of file reached");
     }
     memcpy(buf, RSTRING_PTR(string), len);
 }
