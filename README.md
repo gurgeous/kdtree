@@ -43,7 +43,7 @@ nearest 255 points  0.000063s
 
 ### Contributors
 
-Since this gem was released, several folks have contributed important patches:
+Since this gem was originally released, several folks have contributed important patches:
 
 * @antifuchs (thread safety)
 * @evanphx (native cleanups, perf)
@@ -52,7 +52,7 @@ Since this gem was released, several folks have contributed important patches:
 
 ### Changelog
 
-#### 0.3
+#### 0.3 (in progress, unreleased)
 
 * Ruby 1.9.x compatibility (@mcerna and others)
 * renamed KDTree to the more idiomatic Kdtree
@@ -68,8 +68,3 @@ skipped this version to prevent confusion with other flavors of the gem
 #### 0.1
 
 * Original release
-
-## TODO
-
-1. reclaim rubygems page?
-1. test on the mac!
