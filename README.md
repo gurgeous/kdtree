@@ -52,7 +52,7 @@ Since this gem was originally released, several folks have contributed important
 
 ### Changelog
 
-#### 0.3 (in progress, unreleased)
+#### 0.3
 
 * Ruby 1.9.x compatibility (@mcerna and others)
 * renamed KDTree to the more idiomatic Kdtree
