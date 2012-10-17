@@ -278,7 +278,7 @@ static void kdtree_nearest0(struct kdtree_data *kdtreep, int i, float x, float y
  *   kd = Kdtree.new(points)
  *
  *   # which two cities are closest to San Francisco?
- *   kd.nearest(34.1, -118.2) #=> [2, 1]
+ *   kd.nearestk(34.1, -118.2, 2) #=> [2, 1]
  */
 static VALUE kdtree_nearestk(VALUE kdtree, VALUE x, VALUE y, VALUE k)
 {
@@ -481,7 +481,7 @@ static void write_all(VALUE io, const void *buf, int len)
  *   # which city is closest to San Francisco?
  *   kd.nearest(34.1, -118.2) #=> 2
  *   # which two cities are closest to San Francisco?
- *   kd.nearest(34.1, -118.2) #=> [2, 1]
+ *   kd.nearestk(34.1, -118.2, 2) #=> [2, 1]
  *
  * For more information on kd trees, see:
  *
