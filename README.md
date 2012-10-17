@@ -6,6 +6,8 @@ This gem is a blazingly fast, native, 2d kdtree. It's specifically built to find
 
 The first version of this gem was released back in 2009. See the original [blog post](http://gurge.com/2009/10/22/ruby-nearest-neighbor-fast-kdtree-gem/) for the full story. Wikipedia has a great [article on kdtrees](http://en.wikipedia.org/wiki/K-d_tree).
 
+Note: kdtree 0.3 obsoletes these forks: ghazel-kdtree, groupon-kdtree, tupalo-kdree. Thanks guys!
+
 ### Usage
 
 Usage is very simple:
@@ -14,7 +16,7 @@ Usage is very simple:
 * **kd.nearest(x, y)** - find the nearest point. Returns an id.
 * **kd.nearestk(x, y, k)** - find the nearest `k` points. Returns an array of ids.
 
-Also, I made it possible to **persist** the tree to disk and load it later. That way you can calculate the tree offline and load it quickly at some future point. Loading a persisted tree w/ 1 millions points takes less than a second, as opposed to the 3.5 second startup time shown above. For example:
+Also, I made it possible to **persist** the tree to disk and load it later. That way you can calculate the tree offline and load it quickly at some future point. Loading a persisted tree w/ 1 millions points takes half a second, as opposed to the 3.5 second build time shown above. For example:
 
 ```ruby
 File.open("treefile", "w") { |f| kd.persist(f) }
@@ -36,7 +38,7 @@ nearest 255 points  0.000063s
 
 ### Limitations
 
-* No **editing** allowed! Once you construct a tree you&#8217;re stuck with it.
+* No **editing** allowed! Once you construct a tree you're stuck with it.
 * The tree is stored in **one big memory block**, 20 bytes per point. A tree with one million points will allocate a single 19mb block to store its nodes.
 * Persisted trees are **architecture dependent**, and may not work across different machines due to endian issues.
 * nearestk is limited to **255 results**
