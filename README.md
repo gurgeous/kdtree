@@ -10,17 +10,39 @@ Note: kdtree 0.3 obsoletes these forks: ghazel-kdtree, groupon-kdtree, tupalo-kd
 
 ### Usage
 
-Usage is very simple:
+First, install kdtree:
 
-* **Kdtree.new(points)** - construct a new tree. Each point should be of the form `[x, y, id]`, where `x/y` are floats and `id` is an int. Not a string, not an object, just an int.
+```sh
+$ sudo gem install kdtree
+```
+
+It's easy to use:
+
+* **Kdtree.new(points)** - construct a new tree. Each point should be of the form `[x, y, id]`, where `x/y` are floats and `id` is an int. Not a string, not an object, **just an int**.
 * **kd.nearest(x, y)** - find the nearest point. Returns an id.
 * **kd.nearestk(x, y, k)** - find the nearest `k` points. Returns an array of ids.
 
-Also, I made it possible to **persist** the tree to disk and load it later. That way you can calculate the tree offline and load it quickly at some future point. Loading a persisted tree w/ 1 millions points takes half a second, as opposed to the 3.5 second build time shown above. For example:
+For example:
+
+```ruby
+# construct the tree
+points = []
+points << [47.6, -122.3, 1] # Seattle id=1
+points << [45.5, -122.8, 2] # Portland id=2
+points << [40.7, -74.0,  3] # New York id=3
+kd = Kdtree.new(points)
+
+# which city is closest to San Francisco?
+p kd.nearest(34.1, -118.2) # => 2
+# which two cities are closest to San Francisco?
+p kd.nearestk(34.1, -118.2, 2) # => [2, 1]
+```
+
+Also, I made it possible to **persist** the tree to disk and load it later. That way you can calculate the tree offline and load it quickly at some future point. Loading a persisted tree w/ 1 millions points takes half a second, as opposed to the 3.5 second build time shown below. At Urbanspoon we persist the tree and rsync it out to other machines. For example:
 
 ```ruby
 File.open("treefile", "w") { |f| kd.persist(f) }
-... later ...
+# ... later ...
 kd2 = File.open("treefile") { |f| Kdtree.new(f) }
 ```
 
@@ -29,11 +51,14 @@ kd2 = File.open("treefile") { |f| Kdtree.new(f) }
 Kdtree is fast. How fast? Using a tree with 1 million points on my i5 2.8ghz:
 
 ```
-build               3.5s
+build (init)        3.52s
 nearest point       0.000003s
 nearest 5 points    0.000004s
 nearest 50 points   0.000014s
 nearest 255 points  0.000063s
+
+persist             0.301963s
+read (init)         0.432676s
 ```
 
 ### Limitations
