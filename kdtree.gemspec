@@ -5,6 +5,7 @@ Gem::Specification.new do |s|
   s.authors     = ["Adam Doppelt"]
   s.email       = ["amd@gurge.com"]
   s.homepage    = "http://github.com/gurgeous/kdtree"
+  s.license     = "MIT"
   s.summary     = "Blazingly fast, native 2d kdtree."
   s.description = <<EOF
 A kdtree is a data structure that makes it possible to quickly solve
