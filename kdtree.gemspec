@@ -14,6 +14,7 @@ production use with millions of points.
 EOF
 
   s.rubyforge_project = "kdtree"
+  s.add_development_dependency "minitest"
   s.add_development_dependency "rake-compiler"
 
   s.files      = `git ls-files`.split("\n")

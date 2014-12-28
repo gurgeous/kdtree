@@ -1,13 +1,13 @@
 require "benchmark"
 require "kdtree"
 require "tempfile"
-require "test/unit"
+require "minitest/autorun"
 
 #
 # create a tree
 #
 
-class KdtreeTest < Test::Unit::TestCase
+class KdtreeTest < Minitest::Test
   TMP = "#{Dir.tmpdir}/kdtree_test"
 
   def setup
@@ -72,7 +72,7 @@ class KdtreeTest < Test::Unit::TestCase
 
   def test_bad_magic
     File.open(TMP, "w") { |f| f.puts "That ain't right" }
-    assert_raise RuntimeError do
+    assert_raises RuntimeError do
       File.open(TMP, "r") { |f| Kdtree.new(f) }
     end
   end
@@ -83,7 +83,7 @@ class KdtreeTest < Test::Unit::TestCase
 
     [2, 10, 100].each do |len|
       File.open(TMP, "w") { |f| f.write(bytes[0, len]) }
-      assert_raise EOFError do
+      assert_raises EOFError do
         File.open(TMP, "r") { |f| Kdtree.new(f) }
       end
     end
