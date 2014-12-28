@@ -1,5 +1,7 @@
 ## Kdtree
 
+[![Build Status](https://travis-ci.org/gurgeous/kdtree.svg?branch=master)](https://travis-ci.org/gurgeous/kdtree)
+
 A kd tree is a data structure that recursively partitions the world in order to rapidly answer nearest neighbor queries. A generic kd tree can support any number of dimensions, and can return either the nearest neighbor or a set of N nearest neighbors.
 
 This gem is a blazingly fast, native, 2d kdtree. It's specifically built to find the nearest neighbor when searching millions of points. It's used in production at Urbanspoon and several other companies.
