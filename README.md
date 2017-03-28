@@ -81,6 +81,10 @@ Since this gem was originally released, several folks have contributed important
 
 ### Changelog
 
+#### 0.4
+
+* this is mostly housekeeping - test on more rubies, fix a few warnings
+
 #### 0.3
 
 * Ruby 1.9.x compatibility (@mcerna and others)
