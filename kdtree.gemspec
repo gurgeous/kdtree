@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = "kdtree"
-  s.version     = "0.3"
+  s.version     = "0.4"
 
   s.authors     = ["Adam Doppelt"]
   s.email       = ["amd@gurge.com"]
@@ -14,8 +14,8 @@ production use with millions of points.
 EOF
 
   s.rubyforge_project = "kdtree"
-  s.add_development_dependency "minitest"
-  s.add_development_dependency "rake-compiler"
+  s.add_development_dependency "minitest", "~> 5.0"
+  s.add_development_dependency "rake-compiler", "~> 1.0"
 
   s.files      = `git ls-files`.split("\n")
   s.test_files = `git ls-files -- {test,spec,features}/*`.split("\n")

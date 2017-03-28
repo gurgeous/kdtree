@@ -16,7 +16,7 @@ class KdtreeTest < Minitest::Test
   end
 
   def teardown
-    File.unlink(TMP) if File.exists?(TMP)
+    File.unlink(TMP) if File.exist?(TMP)
   end
 
   def test_nearest
@@ -110,9 +110,7 @@ class KdtreeTest < Minitest::Test
 
         ks.each do |k|
           bm.report "100 queries (#{k})" do
-            total = count = 0
             100.times do
-              tm = Time.now
               if k == 1
                 kdtree.nearest(rand_coord, rand_coord)
               else
