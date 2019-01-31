@@ -406,7 +406,6 @@ static void kdtree_nearestk0(struct kdtree_data *kdtreep, int i, float x, float 
  */
 static VALUE kdtree_persist(VALUE kdtree, VALUE io)
 {
-    VALUE str;
     KDTREEP;
 
     if (!rb_respond_to(io, rb_intern("write"))) {
