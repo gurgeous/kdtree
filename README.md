@@ -81,11 +81,13 @@ Since this gem was originally released, several folks have contributed important
 
 ### Changelog
 
-#### 0.4
+Note: This gem is stable and continues to work great with all modern versions of Ruby MRI. No need for new releases until something breaks!
+
+#### 0.4 - Mar 2017
 
 * this is mostly housekeeping - test on more rubies, fix a few warnings
 
-#### 0.3
+#### 0.3 - Oct 2012
 
 * Ruby 1.9.x compatibility (@mcerna and others)
 * renamed KDTree to the more idiomatic Kdtree
@@ -98,6 +100,6 @@ Since this gem was originally released, several folks have contributed important
 
 skipped this version to prevent confusion with other flavors of the gem
 
-#### 0.1
+#### 0.1 - Jan 2010
 
 * Original release
