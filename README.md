@@ -81,9 +81,9 @@ Since this gem was originally released, several folks have contributed important
 
 ### Changelog
 
-Note: This gem is stable and continues to work great with all modern versions of Ruby MRI. No need for new releases until something breaks!
+Note: This gem is stable, maintained and continues to work great with all modern versions of Ruby MRI. Our CI tests through Ruby 2.7. No need for new releases until something breaks!
 
-#### 0.4 - Mar 2017
+#### 0.4 - current
 
 * this is mostly housekeeping - test on more rubies, fix a few warnings
 
