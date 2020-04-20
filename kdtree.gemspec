@@ -13,7 +13,6 @@ the nearest neighbor problem. This is a native 2d kdtree suitable for
 production use with millions of points.
 EOF
 
-  s.rubyforge_project = "kdtree"
   s.add_development_dependency "minitest", "~> 5.0"
   s.add_development_dependency "rake-compiler", "~> 1.0"
 

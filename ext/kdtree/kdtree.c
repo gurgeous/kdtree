@@ -103,7 +103,7 @@ static VALUE kdtree_initialize(VALUE kdtree, VALUE arg)
         // init from array of pints
         VALUE points = arg;
         int i;
-        kdtreep->len = RARRAY_LEN(points);
+        kdtreep->len = (int)RARRAY_LEN(points);
         kdtreep->nodes = ALLOC_N(struct kdtree_node, kdtreep->len);
 
         for (i = 0; i < RARRAY_LEN(points); ++i) {
