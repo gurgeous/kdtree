@@ -1,6 +1,6 @@
 ## Kdtree
 
-[![Build Status](https://travis-ci.org/gurgeous/kdtree.svg?branch=master)](https://travis-ci.org/gurgeous/kdtree)
+[![Build Status](https://github.com/gurgeous/kdtree/workflows/ci/badge.svg?branch=master)](https://github.com/gurgeous/kdtree/actions)
 
 A kd tree is a data structure that recursively partitions the world in order to rapidly answer nearest neighbor queries. A generic kd tree can support any number of dimensions, and can return either the nearest neighbor or a set of N nearest neighbors.
 
@@ -20,9 +20,9 @@ $ sudo gem install kdtree
 
 It's easy to use:
 
-* **Kdtree.new(points)** - construct a new tree. Each point should be of the form `[x, y, id]`, where `x/y` are floats and `id` is an int. Not a string, not an object, **just an int**.
-* **kd.nearest(x, y)** - find the nearest point. Returns an id.
-* **kd.nearestk(x, y, k)** - find the nearest `k` points. Returns an array of ids.
+- **Kdtree.new(points)** - construct a new tree. Each point should be of the form `[x, y, id]`, where `x/y` are floats and `id` is an int. Not a string, not an object, **just an int**.
+- **kd.nearest(x, y)** - find the nearest point. Returns an id.
+- **kd.nearestk(x, y, k)** - find the nearest `k` points. Returns an array of ids.
 
 For example:
 
@@ -65,19 +65,19 @@ read (init)         0.432676s
 
 ### Limitations
 
-* No **editing** allowed! Once you construct a tree you're stuck with it.
-* The tree is stored in **one big memory block**, 20 bytes per point. A tree with one million points will allocate a single 19mb block to store its nodes.
-* Persisted trees are **architecture dependent**, and may not work across different machines due to endian issues.
-* nearestk is limited to **255 results**
+- No **editing** allowed! Once you construct a tree you're stuck with it.
+- The tree is stored in **one big memory block**, 20 bytes per point. A tree with one million points will allocate a single 19mb block to store its nodes.
+- Persisted trees are **architecture dependent**, and may not work across different machines due to endian issues.
+- nearestk is limited to **255 results**
 
 ### Contributors
 
 Since this gem was originally released, several folks have contributed important patches:
 
-* @antifuchs (thread safety)
-* @evanphx (native cleanups, perf)
-* @ghazel (C89 compliance)
-* @mcerna (1.9 compat)
+- @antifuchs (thread safety)
+- @evanphx (native cleanups, perf)
+- @ghazel (C89 compliance)
+- @mcerna (1.9 compat)
 
 ### Changelog
 
@@ -85,16 +85,16 @@ Note: This gem is stable, maintained and continues to work great with all modern
 
 #### 0.4 - current
 
-* this is mostly housekeeping - test on more rubies, fix a few warnings
+- this is mostly housekeeping - test on more rubies, fix a few warnings
 
 #### 0.3 - Oct 2012
 
-* Ruby 1.9.x compatibility (@mcerna and others)
-* renamed KDTree to the more idiomatic Kdtree
-* use IO methods directly instead of rooting around in rb_io
-* thread safe, no more statics (@antifuchs)
-* C90 compliance, no warnings (@ghazel)
-* native cleanups (@evanphx)
+- Ruby 1.9.x compatibility (@mcerna and others)
+- renamed KDTree to the more idiomatic Kdtree
+- use IO methods directly instead of rooting around in rb_io
+- thread safe, no more statics (@antifuchs)
+- C90 compliance, no warnings (@ghazel)
+- native cleanups (@evanphx)
 
 #### 0.2
 
@@ -102,4 +102,4 @@ skipped this version to prevent confusion with other flavors of the gem
 
 #### 0.1 - Jan 2010
 
-* Original release
+- Original release
