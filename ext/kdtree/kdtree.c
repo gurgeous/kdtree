@@ -218,7 +218,7 @@ static void kdtree_nearest0(struct kdtree_data *kdtreep, int i, float x, float y
 {
     struct kdtree_node *n;
     float ad;
-    int near, far;
+    int nearer, further;
     float dx;
 
     if (i == -1) {
@@ -234,13 +234,13 @@ static void kdtree_nearest0(struct kdtree_data *kdtreep, int i, float x, float y
     //
 
     if (ad <= 0) {
-        near = n->left; far = n->right;
+        nearer = n->left; further = n->right;
     } else {
-        near = n->right; far = n->left;
+        nearer = n->right; further = n->left;
     }
-    kdtree_nearest0(kdtreep, near,  x, y, depth + 1, n_index, n_dist);
+    kdtree_nearest0(kdtreep, nearer,  x, y, depth + 1, n_index, n_dist);
     if (ad * ad < *n_dist) {
-        kdtree_nearest0(kdtreep, far, x, y, depth + 1, n_index, n_dist);
+        kdtree_nearest0(kdtreep, further, x, y, depth + 1, n_index, n_dist);
     }
 
     //
@@ -310,7 +310,7 @@ static void kdtree_nearestk0(struct kdtree_data *kdtreep, int i, float x, float 
 {
     struct kdtree_node *n;
     float ad;
-    int near, far;
+    int nearer, further;
     float dx;
     int lo, hi;
 
@@ -327,15 +327,14 @@ static void kdtree_nearestk0(struct kdtree_data *kdtreep, int i, float x, float 
     //
 
     if (ad <= 0) {
-        near = n->left; far = n->right;
+        nearer = n->left; further = n->right;
     } else {
-        near = n->right; far = n->left;
+        nearer = n->right; further = n->left;
     }
-    kdtree_nearestk0(kdtreep, near,  x, y, k, depth + 1, k_list, k_len, k_dist);
+    kdtree_nearestk0(kdtreep, nearer,  x, y, k, depth + 1, k_list, k_len, k_dist);
     if (ad * ad < *k_dist) {
-        kdtree_nearestk0(kdtreep, far, x, y, k, depth + 1, k_list, k_len, k_dist);
+        kdtree_nearestk0(kdtreep, further, x, y, k, depth + 1, k_list, k_len, k_dist);
     }
-
     //
     // do we beat the old distance?
     //
