@@ -5,16 +5,14 @@
 //
 
 // the tree itself
-typedef struct kdtree_data
-{
+typedef struct kdtree_data {
     int root;
     int len;
     struct kdtree_node *nodes;
 } kdtree_data;
 
 // a node in the tree
-typedef struct kdtree_node
-{
+typedef struct kdtree_node {
     float x, y;
     int id;
     int left;
@@ -28,7 +26,7 @@ typedef struct kresult {
 } kresult;
 
 // helper macro for digging out our struct
-#define KDTREEP \
+#define KDTREEP                  \
     struct kdtree_data *kdtreep; \
     Data_Get_Struct(kdtree, struct kdtree_data, kdtreep);
 
@@ -43,8 +41,10 @@ static VALUE kdtree_to_s(VALUE kdtree);
 
 // kdtree helpers
 static int kdtree_build(struct kdtree_data *kdtreep, int min, int max, int depth);
-static void kdtree_nearest0(struct kdtree_data *kdtreep, int i, float x, float y, int depth, int *n_index, float *n_dist);
-static void kdtree_nearestk0(struct kdtree_data *kdtreep, int i, float x, float y, int k, int depth, kresult *k_list, int *k_len, float *k_dist);
+static void kdtree_nearest0(struct kdtree_data *kdtreep, int i, float x, float y, int depth,
+                            int *n_index, float *n_dist);
+static void kdtree_nearestk0(struct kdtree_data *kdtreep, int i, float x, float y, int k, int depth,
+                             kresult *k_list, int *k_len, float *k_dist);
 
 // io helpers
 static void read_all(VALUE io, void *buf, int len);
@@ -59,16 +59,14 @@ static ID id_read, id_write, id_binmode;
 // implementation
 //
 
-static VALUE kdtree_alloc(VALUE klass)
-{
+static VALUE kdtree_alloc(VALUE klass) {
     struct kdtree_data *kdtreep;
     VALUE obj = Data_Make_Struct(klass, struct kdtree_data, 0, kdtree_free, kdtreep);
     kdtreep->root = -1;
     return obj;
 }
 
-static void kdtree_free(struct kdtree_data *kdtreep)
-{
+static void kdtree_free(struct kdtree_data *kdtreep) {
     if (kdtreep) {
         free(kdtreep->nodes);
     }
@@ -95,8 +93,7 @@ static void kdtree_free(struct kdtree_data *kdtreep)
  * kdtree. This makes it possible to build the tree in advance, persist it, and
  * start it up quickly later. See persist for more information.
  */
-static VALUE kdtree_initialize(VALUE kdtree, VALUE arg)
-{
+static VALUE kdtree_initialize(VALUE kdtree, VALUE arg) {
     KDTREEP;
 
     if (TYPE(arg) == T_ARRAY) {
@@ -147,23 +144,20 @@ static VALUE kdtree_initialize(VALUE kdtree, VALUE arg)
     return kdtree;
 }
 
-static int comparex(const void *pa, const void *pb)
-{
-    float a = ((const struct kdtree_node*)pa)->x;
-    float b = ((const struct kdtree_node*)pb)->x;
+static int comparex(const void *pa, const void *pb) {
+    float a = ((const struct kdtree_node *)pa)->x;
+    float b = ((const struct kdtree_node *)pb)->x;
     return (a < b) ? -1 : ((a > b) ? 1 : 0);
 }
 
-static int comparey(const void *pa, const void *pb)
-{
-    float a = ((const struct kdtree_node*)pa)->y;
-    float b = ((const struct kdtree_node*)pb)->y;
+static int comparey(const void *pa, const void *pb) {
+    float a = ((const struct kdtree_node *)pa)->y;
+    float b = ((const struct kdtree_node *)pb)->y;
     return (a < b) ? -1 : ((a > b) ? 1 : 0);
 }
 
-static int kdtree_build(struct kdtree_data *kdtreep, int min, int max, int depth)
-{
-    int(*compar)(const void *, const void *);
+static int kdtree_build(struct kdtree_data *kdtreep, int min, int max, int depth) {
+    int (*compar)(const void *, const void *);
     struct kdtree_node *m;
     int median;
     if (max <= min) {
@@ -198,8 +192,7 @@ static int kdtree_build(struct kdtree_data *kdtreep, int min, int max, int depth
  *   # which city is closest to Boston?
  *   kd.nearest(42.4, -71.1)  #=> 2
  */
-static VALUE kdtree_nearest(VALUE kdtree, VALUE x, VALUE y)
-{
+static VALUE kdtree_nearest(VALUE kdtree, VALUE x, VALUE y) {
     int n_index;
     float n_dist;
     KDTREEP;
@@ -214,8 +207,8 @@ static VALUE kdtree_nearest(VALUE kdtree, VALUE x, VALUE y)
     return INT2NUM((kdtreep->nodes + n_index)->id);
 }
 
-static void kdtree_nearest0(struct kdtree_data *kdtreep, int i, float x, float y, int depth, int *n_index, float *n_dist)
-{
+static void kdtree_nearest0(struct kdtree_data *kdtreep, int i, float x, float y, int depth,
+                            int *n_index, float *n_dist) {
     struct kdtree_node *n;
     float ad;
     int near, far;
@@ -234,11 +227,13 @@ static void kdtree_nearest0(struct kdtree_data *kdtreep, int i, float x, float y
     //
 
     if (ad <= 0) {
-        near = n->left; far = n->right;
+        near = n->left;
+        far = n->right;
     } else {
-        near = n->right; far = n->left;
+        near = n->right;
+        far = n->left;
     }
-    kdtree_nearest0(kdtreep, near,  x, y, depth + 1, n_index, n_dist);
+    kdtree_nearest0(kdtreep, near, x, y, depth + 1, n_index, n_dist);
     if (ad * ad < *n_dist) {
         kdtree_nearest0(kdtreep, far, x, y, depth + 1, n_index, n_dist);
     }
@@ -280,9 +275,9 @@ static void kdtree_nearest0(struct kdtree_data *kdtreep, int i, float x, float y
  *   # which two cities are closest to San Francisco?
  *   kd.nearestk(34.1, -118.2, 2) #=> [2, 1]
  */
-static VALUE kdtree_nearestk(VALUE kdtree, VALUE x, VALUE y, VALUE k)
-{
-    // note I leave an extra slot here at the end because of the way our binary insert works
+static VALUE kdtree_nearestk(VALUE kdtree, VALUE x, VALUE y, VALUE k) {
+    // note I leave an extra slot here at the end because of the way our binary
+    // insert works
     kresult k_list[MAX_K + 1];
     int k_len = 0;
     float k_dist = INT_MAX;
@@ -296,7 +291,8 @@ static VALUE kdtree_nearestk(VALUE kdtree, VALUE x, VALUE y, VALUE k)
     } else if (ki > MAX_K) {
         ki = MAX_K;
     }
-    kdtree_nearestk0(kdtreep, kdtreep->root, NUM2DBL(x), NUM2DBL(y), ki, 0, k_list, &k_len, &k_dist);
+    kdtree_nearestk0(kdtreep, kdtreep->root, NUM2DBL(x), NUM2DBL(y), ki, 0, k_list, &k_len,
+                     &k_dist);
 
     // convert result to ruby array
     ary = rb_ary_new();
@@ -306,8 +302,8 @@ static VALUE kdtree_nearestk(VALUE kdtree, VALUE x, VALUE y, VALUE k)
     return ary;
 }
 
-static void kdtree_nearestk0(struct kdtree_data *kdtreep, int i, float x, float y, int k, int depth, kresult *k_list, int *k_len, float *k_dist)
-{
+static void kdtree_nearestk0(struct kdtree_data *kdtreep, int i, float x, float y, int k, int depth,
+                             kresult *k_list, int *k_len, float *k_dist) {
     struct kdtree_node *n;
     float ad;
     int near, far;
@@ -327,11 +323,13 @@ static void kdtree_nearestk0(struct kdtree_data *kdtreep, int i, float x, float 
     //
 
     if (ad <= 0) {
-        near = n->left; far = n->right;
+        near = n->left;
+        far = n->right;
     } else {
-        near = n->right; far = n->left;
+        near = n->right;
+        far = n->left;
     }
-    kdtree_nearestk0(kdtreep, near,  x, y, k, depth + 1, k_list, k_len, k_dist);
+    kdtree_nearestk0(kdtreep, near, x, y, k, depth + 1, k_list, k_len, k_dist);
     if (ad * ad < *k_dist) {
         kdtree_nearestk0(kdtreep, far, x, y, k, depth + 1, k_list, k_len, k_dist);
     }
@@ -404,8 +402,7 @@ static void kdtree_nearestk0(struct kdtree_data *kdtreep, int i, float x, float 
  *   # later, read the tree from disk
  *   kd2 = File.open("treefile") { |f| Kdtree.new(f) }
  */
-static VALUE kdtree_persist(VALUE kdtree, VALUE io)
-{
+static VALUE kdtree_persist(VALUE kdtree, VALUE io) {
     KDTREEP;
 
     if (!rb_respond_to(io, rb_intern("write"))) {
@@ -427,12 +424,11 @@ static VALUE kdtree_persist(VALUE kdtree, VALUE io)
  *
  * A string that tells you a bit about the tree.
  */
-static VALUE kdtree_to_s(VALUE kdtree)
-{
+static VALUE kdtree_to_s(VALUE kdtree) {
     char buf[256];
     KDTREEP;
 
-    sprintf(buf, "#<%s:%p nodes=%d>", rb_obj_classname(kdtree), (void*)kdtree, kdtreep->len);
+    sprintf(buf, "#<%s:%p nodes=%d>", rb_obj_classname(kdtree), (void *)kdtree, kdtreep->len);
     return rb_str_new(buf, strlen(buf));
 }
 
@@ -440,8 +436,7 @@ static VALUE kdtree_to_s(VALUE kdtree)
 // io helpers
 //
 
-static void read_all(VALUE io, void *buf, int len)
-{
+static void read_all(VALUE io, void *buf, int len) {
     VALUE string = rb_funcall(io, id_read, 1, INT2NUM(len));
     if (NIL_P(string) || RSTRING_LEN(string) != len) {
         rb_raise(rb_eEOFError, "end of file reached");
@@ -449,8 +444,7 @@ static void read_all(VALUE io, void *buf, int len)
     memcpy(buf, RSTRING_PTR(string), len);
 }
 
-static void write_all(VALUE io, const void *buf, int len)
-{
+static void write_all(VALUE io, const void *buf, int len) {
     rb_funcall(io, id_write, 1, rb_str_new(buf, len));
 }
 
@@ -486,8 +480,7 @@ static void write_all(VALUE io, const void *buf, int len)
  *
  * http://en.wikipedia.org/wiki/Kd-tree
  */
-void Init_kdtree()
-{
+void Init_kdtree() {
     static VALUE clazz;
 
     clazz = rb_define_class("Kdtree", rb_cObject);

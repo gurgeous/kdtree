@@ -1,0 +1,20 @@
+name: test
+
+on: [push]
+
+jobs:
+  test:
+    strategy:
+      max-parallel: 3
+      matrix:
+        os: [macos, ubuntu]
+        ruby: [3.0, 3.4]
+    runs-on: ${{ matrix.os }}-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: taiki-e/install-action@just
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+          ruby-version: ${{ matrix.ruby }}
+      - run: just ci
