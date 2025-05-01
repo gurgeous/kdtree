@@ -1,6 +1,5 @@
-## Kdtree
+## Kdtree [![test](https://github.com/gurgeous/kdtree/actions/workflows/test.yml/badge.svg)](https://github.com/gurgeous/kdtree/actions/workflows/test.yml)
 
-[![Build Status](https://github.com/gurgeous/kdtree/workflows/test/badge.svg?branch=master)](https://github.com/gurgeous/kdtree/actions)
 
 A kd tree is a data structure that recursively partitions the world in order to rapidly answer nearest neighbor queries. A generic kd tree can support any number of dimensions, and can return either the nearest neighbor or a set of N nearest neighbors.
 
