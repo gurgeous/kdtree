@@ -19,7 +19,15 @@ Gem::Specification.new do |s|
     "source_code_uri" => s.homepage,
   }
 
-  s.files = `git ls-files`.split("\n")
+  s.files = %w[
+    ext/kdtree/extconf.rb
+    ext/kdtree/kdtree.c
+    kdtree.gemspec
+    lib/kdtree.rb
+    LICENSE
+    README.md
+  ]
+
   s.extensions = ["ext/kdtree/extconf.rb"]
   s.require_paths = ["lib"]
 end

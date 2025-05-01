@@ -1,5 +1,9 @@
 default: test
 
+#
+# ci/test
+#
+
 # check repo - lint & test
 check: lint test
 
@@ -7,23 +11,39 @@ check: lint test
 ci:
   @just test
 
-# format with rubocop
-format: (lint "-a")
+# run tests
+test *ARGS:
+  @just _banner rake test {{ARGS}}
+  @bundle exec rake test {{ARGS}}
+
+#
+# build/release
+#
+
+clean:
+  rm -rf pkg tmp lib/*.bundle lib/*.so
+
+gem-build: check clean
+  @just _banner rake build...
+  @bundle exec rake build
 
 # this will tag, build and push to rubygems
-gem-push: check
+gem-push: check clean
   @just _banner rake release...
   rake release
+
+#
+# lint
+#
+
+# format with rubocop
+format: (lint "-a")
 
 # lint with rubocop
 lint *ARGS:
   @just _banner lint...
   bundle exec rubocop {{ARGS}}
 
-# run tests
-test *ARGS:
-  @just _banner rake test {{ARGS}}
-  @bundle exec rake test {{ARGS}}
 
 #
 # util

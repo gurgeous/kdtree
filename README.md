@@ -54,17 +54,17 @@ kd2 = File.open("treefile") { |f| Kdtree.new(f) }
 
 ### Performance
 
-Kdtree is fast. How fast? Using a tree with 1 million points on my i5 2.8ghz:
+Kdtree is fast. How fast? Using a tree with 1 million points on my M1:
 
 ```
-build (init)        3.52s
-nearest point       0.000003s
-nearest 5 points    0.000004s
-nearest 50 points   0.000014s
-nearest 255 points  0.000063s
+build (init)        0.96s
+persist             0.000814s
+read (init)         0.009236s
 
-persist             0.301963s
-read (init)         0.432676s
+nearest point       0.000002s
+nearest 5 points    0.000002s
+nearest 50 points   0.000006s
+nearest 255 points  0.000026s
 ```
 
 ### Limitations
@@ -85,7 +85,7 @@ Since this gem was originally released, several folks have contributed important
 
 ### Changelog
 
-Note: This gem is stable, maintained and continues to work great with all modern versions of Ruby MRI. Our CI tests through Ruby 2.7. No need for new releases until something breaks!
+Note: This gem is stable, maintained and continues to work great with all modern versions of Ruby MRI. Our CI tests through Ruby 3.4. No need for new releases until something breaks!
 
 #### 0.5 - May 2025
 

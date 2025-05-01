@@ -1,6 +1,6 @@
-.tool-versions
-*.gem
-Gemfile.lock
-lib/*.so
-lib/kdtree.bundle
-tmp
+*.bundle
+*.so
+/.tool-versions
+/Gemfile.lock
+/pkg/
+/tmp/

@@ -96,6 +96,11 @@ class KdtreeTest < Minitest::Test
     sizes.each do |s|
       points = (0...s).map { |i| [rand_coord, rand_coord, i] }
 
+      puts
+      puts "x" * 72
+      puts "x with #{s} points"
+      puts "x" * 72
+
       # build
       Benchmark.bm(17) do |bm|
         kdtree = nil
@@ -121,7 +126,6 @@ class KdtreeTest < Minitest::Test
           end
         end
       end
-      puts
     end
   end
 
