@@ -1,22 +1,26 @@
 ## Kdtree
 
-[![Build Status](https://github.com/gurgeous/kdtree/workflows/ci/badge.svg?branch=master)](https://github.com/gurgeous/kdtree/actions)
+[![Build Status](https://github.com/gurgeous/kdtree/workflows/test/badge.svg?branch=master)](https://github.com/gurgeous/kdtree/actions)
 
 A kd tree is a data structure that recursively partitions the world in order to rapidly answer nearest neighbor queries. A generic kd tree can support any number of dimensions, and can return either the nearest neighbor or a set of N nearest neighbors.
 
 This gem is a blazingly fast, native, 2d kdtree. It's specifically built to find the nearest neighbor when searching millions of points. It's used in production at Urbanspoon and several other companies.
 
-The first version of this gem was released back in 2009. See the original [blog post](http://gurge.com/2009/10/22/ruby-nearest-neighbor-fast-kdtree-gem/) for the full story. Wikipedia has a great [article on kdtrees](http://en.wikipedia.org/wiki/K-d_tree).
+The first version of this gem was released back in 2009. Wikipedia has a great [article on kdtrees](http://en.wikipedia.org/wiki/K-d_tree).
 
-Note: kdtree 0.3 obsoletes these forks: ghazel-kdtree, groupon-kdtree, tupalo-kdree. Thanks guys!
+Note: kdtree obsoletes these forks: ghazel-kdtree, groupon-kdtree, tupalo-kdree. Thanks guys!
+
+### Installation
+
+```ruby
+# install gem
+$ gem install kdtree
+
+# or add to your Gemfile
+gem "kdtree"
+```
 
 ### Usage
-
-First, install kdtree:
-
-```sh
-$ sudo gem install kdtree
-```
 
 It's easy to use:
 
@@ -83,7 +87,11 @@ Since this gem was originally released, several folks have contributed important
 
 Note: This gem is stable, maintained and continues to work great with all modern versions of Ruby MRI. Our CI tests through Ruby 2.7. No need for new releases until something breaks!
 
-#### 0.4 - current
+#### 0.5 - May 2025
+
+- refresh formatting, use latest rubies
+
+#### 0.4 - Mar 2017
 
 - this is mostly housekeeping - test on more rubies, fix a few warnings
 

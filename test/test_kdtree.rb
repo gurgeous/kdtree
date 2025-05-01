@@ -2,6 +2,7 @@ require "benchmark"
 require "kdtree"
 require "tempfile"
 require "minitest/autorun"
+require "minitest/pride"
 
 #
 # create a tree
@@ -28,7 +29,7 @@ class KdtreeTest < Minitest::Test
       kdpt = @points[id]
 
       # slow search
-      sortpt = @points.sort_by { |i| distance(i, pt) }.first
+      sortpt = @points.min_by { distance(_1, pt) }
 
       # assert
       kdd = distance(kdpt, pt)
@@ -46,7 +47,7 @@ class KdtreeTest < Minitest::Test
       kdpt = @points[list.last]
 
       # slow search
-      sortpt = @points.sort_by { |i| distance(i, pt) }[list.length - 1]
+      sortpt = @points.sort_by { distance(_1, pt) }[list.length - 1]
 
       # assert
       kdd = distance(kdpt, pt)
@@ -82,7 +83,7 @@ class KdtreeTest < Minitest::Test
     bytes = File.read(TMP)
 
     [2, 10, 100].each do |len|
-      File.open(TMP, "w") { |f| f.write(bytes[0, len]) }
+      File.write(TMP, bytes[0, len])
       assert_raises EOFError do
         File.open(TMP, "r") { |f| Kdtree.new(f) }
       end
@@ -136,13 +137,15 @@ class KdtreeTest < Minitest::Test
   end
 end
 
-# running dont_test_speed on my i5 2.8ghz:
+#
+# running dont_test_speed on my M1:
 #
 #                         user     system      total        real
-# build               3.350000   0.020000   3.370000 (  3.520528)
-# persist             0.150000   0.020000   0.170000 (  0.301963)
-# read                0.280000   0.000000   0.280000 (  0.432676)
-# 100 queries (1)     0.000000   0.000000   0.000000 (  0.000319)
-# 100 queries (5)     0.000000   0.000000   0.000000 (  0.000412)
-# 100 queries (50)    0.000000   0.000000   0.000000 (  0.001417)
-# 100 queries (255)   0.000000   0.000000   0.000000 (  0.006268)
+# build               0.954846   0.008057   0.962903 (  0.999617)
+# persist             0.000843   0.005116   0.005959 (  0.007224)
+# read                0.008995   0.003483   0.012478 (  0.012649)
+# 100 queries (1)     0.000176   0.000011   0.000187 (  0.000186)
+# 100 queries (5)     0.000217   0.000009   0.000226 (  0.000225)
+# 100 queries (50)    0.000631   0.000008   0.000639 (  0.000638)
+# 100 queries (255)   0.002591   0.000035   0.002626 (  0.002627)
+#

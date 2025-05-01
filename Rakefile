@@ -1,41 +1,22 @@
 require "bundler/setup"
 require "rake/extensiontask"
 require "rake/testtask"
-
-# load the spec, we use it below
-spec = Gem::Specification.load("kdtree.gemspec")
-
-#
-# gem
-#
-
-task :build do
-  system "gem build --quiet kdtree.gemspec"
-end
-
-task install: :build do
-  system "sudo gem install --quiet kdtree-#{spec.version}.gem"
-end
-
-task release: :build do
-  system "git tag -a #{spec.version} -m 'Tagging #{spec.version}'"
-  system "git push --tags"
-  system "gem push kdtree-#{spec.version}.gem"
-end
+require "bundler"
+Bundler::GemHelper.install_tasks
 
 #
 # rake-compiler
 #
 
-Rake::ExtensionTask.new("kdtree", spec)
-
+Rake::ExtensionTask.new("kdtree")
 
 #
 # testing
 #
 
-Rake::TestTask.new(:test) do |test|
-  test.libs << "test"
+Rake::TestTask.new do
+  _1.libs << "test"
+  _1.test_files = FileList["test/**/test_*.rb"]
 end
 task test: :compile
 task default: :test

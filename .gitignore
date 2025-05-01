@@ -1,5 +1,5 @@
+.tool-versions
 *.gem
-.ruby-version
 Gemfile.lock
 lib/*.so
 lib/kdtree.bundle
