@@ -89,7 +89,10 @@ Note: This gem is stable, maintained and continues to work great with all modern
 
 #### 0.5 - May 2025
 
-- refresh formatting, use latest rubies
+- justfile
+- hygiene - updated deps, format/lint, modernize rakefile
+- moved to ruby 3.x or higher, tested with ruby 3.4
+- updated benchmark numbers (still real fast)
 
 #### 0.4 - Mar 2017
 
